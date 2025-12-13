@@ -96,25 +96,33 @@ class NotionDSManager:
         self,
         data_source_name: str,
         page_id: str,
-        properties: Dict[str, Any],
-        content: str | None = None
+        properties: Optional[Dict[str, Any]] = None,
+        content: str | list | None = None
     ) -> dict:
         """
         Update a page inside a registered data source.
         """
-        
-        response = self.client.pages.update(page_id=page_id,
-                                            properties=self.data_templates[data_source_name].to_page(properties)
-                                           )
+
+        if isinstance(properties, dict):
+            response = self.client.pages.update(page_id=page_id,
+                                                properties=self.data_templates[data_source_name].to_page(properties)
+                                               )
+
+        if isinstance(content, (str, list)):
+            if isinstance(content, str):
+                content_array = RichText(0).value(content)[0]
+                
+            elif isinstance(content, list):
+                content_array = RichText(0).value('')[0]
+                content_array['rich_text'] = [{'type': 'text', 'text': {'content': x}} for x in content]
             
-        if isinstance(content, str):
             self.client.blocks.children.append(
                 block_id=page_id,
                 children=[
                     {
                         "object": "block",
                         "type": "paragraph",
-                        "paragraph": RichText(0).value(content)[0]
+                        "paragraph": content_array
                     }
                 ]
             )
