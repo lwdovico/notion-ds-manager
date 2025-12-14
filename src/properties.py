@@ -111,6 +111,9 @@ class RichText(Property):
     def _format_value(self, text: str):
         return [{"type": "text", "text": {"content": text}}]
 
+class Url(Property):
+    schema_key = "url"
+    python_type = (str, type(None))
 
 class Number(Property):
     schema_key = "number"
@@ -165,7 +168,6 @@ class Relation(Property):
 
     def _format_value(self, ids: List[str]):
         return [{"id": r} for r in ids]
-
 
 class Files(Property):
     schema_key = "files"
@@ -235,6 +237,7 @@ class PropertyTypes:
     PROPERTY_TYPES = {
                       "title": Title,
                       "rich_text": RichText,
+                      "url": Url,
                       "number": Number,
                       "checkbox": Checkbox,
                       "date": Date,
