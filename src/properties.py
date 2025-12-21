@@ -125,14 +125,18 @@ class Checkbox(Property):
 
 class Date(Property):
     schema_key = "date"
-    python_type = (str, type(None))  # ISO string or None
+    python_type = (str, tuple, dict, type(None))
 
-    def _format_value(self, start_or_dict):
-        if start_or_dict is None:
+    def _format_value(self, value):
+        if value is None:
             return None
-        if isinstance(start_or_dict, dict):
-            return start_or_dict
-        return {"start": start_or_dict}
+        if isinstance(value, dict):
+            return value
+        if isinstance(value, tuple):
+            start, end = value
+            return {"start": start,
+                    "end": end }
+        return {"start": value }
 
 
 class Select(Property):
