@@ -235,6 +235,39 @@ class PageProperties:
     def build(self) -> dict:
         return {k: v for obj in self.values for k, v in obj.items()}
 
+class Formula(ReadOnlyProperty):
+    """
+    Formula fields are computed by Notion and are read-only.
+    This is a placeholder implementation that intentionally
+    returns nothing when accessed.
+    """
+
+    schema_key = "formula"
+
+    def __init__(self, name: str, expression: Optional[str] = None):
+        super().__init__(name)
+        self.expression = expression
+
+    def build(self):
+        # Formula expression is defined in Notion UI
+        schema = {}
+        if self.expression is not None:
+            schema["expression"] = self.expression
+
+        return {
+            self.name: {
+                "formula": schema
+            }
+        }
+
+    def from_page_value(self, notion_data: dict):
+        # Placeholder: intentionally return nothing
+        return None
+
+    def to_notion_filter(self, value):
+        raise NotImplementedError(
+            f"Formula filters are not implemented for '{self.name}'."
+        )
 
 class PropertyTypes:
     
@@ -252,7 +285,8 @@ class PropertyTypes:
                       "select": Select,
                       "multi_select": MultiSelect,
                       "relation": Relation,
-                      "files": Files
+                      "files": Files,
+                      "formula": Formula
                      }
     
     @classmethod
